@@ -3,7 +3,10 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 # Çözüm ve projeyi kopyala
+COPY RenartCase/*.csproj ./RenartCase/
+WORKDIR /src/RenartCase
 COPY . .
+
 RUN dotnet publish RenartCase.csproj -c Release -o /app/publish
 
 # ---------- RUNTIME AŞAMASI ----------
