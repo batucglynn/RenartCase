@@ -1,15 +1,16 @@
-# ---------- BUILD AŞAMASI ----------
+# ----------- BUILD AŞAMASI -----------
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Çözüm ve projeyi kopyala
-COPY RenartCase/*.csproj ./RenartCase/
-WORKDIR /src/RenartCase
-COPY . .
+# Projeyi kopyala
+COPY *.csproj ./
+RUN dotnet restore
 
-RUN dotnet publish RenartCase.csproj -c Release -o /app/publish
+# Diğer tüm dosyaları kopyala ve build et
+COPY . . 
+RUN dotnet publish -c Release -o /app/publish
 
-# ---------- RUNTIME AŞAMASI ----------
+# ----------- RUNTIME AŞAMASI -----------
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 COPY --from=build /app/publish .
