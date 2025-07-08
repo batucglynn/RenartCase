@@ -1,21 +1,15 @@
-# 1. SDK imajı ile build işlemi
+# ---------- BUILD AŞAMASI ----------
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-WORKDIR /app
+WORKDIR /src
 
-# Projeyi kopyala ve restore et
-COPY *.sln .
-COPY RenartCase/*.csproj ./RenartCase/
-RUN dotnet restore
-
-# Tüm dosyaları kopyala ve publish et
+# Çözüm ve projeyi kopyala
 COPY . .
-WORKDIR /app/RenartCase
-RUN dotnet publish -c Release -o out
+RUN dotnet publish RenartCase.csproj -c Release -o /app/publish
 
-# 2. Runtime imajı ile çalıştırılabilir hale getir
-FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS runtime
+# ---------- RUNTIME AŞAMASI ----------
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
-COPY --from=build /app/RenartCase/out .
+COPY --from=build /app/publish .
 
-# Uygulamayı başlat
+EXPOSE 80
 ENTRYPOINT ["dotnet", "RenartCase.dll"]
